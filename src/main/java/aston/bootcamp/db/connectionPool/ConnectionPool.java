@@ -17,9 +17,9 @@ public class ConnectionPool {
     private static final String PASSWORD_KEY = "db.pwd";
     private static final String SET_AUTOCOMMIT_KEY = "hikari.set-autocommit";
     private static final String DRIVER_KEY = "db.driver-class-name";
-
     private static final HikariConfig HIKARI_CONFIG = new HikariConfig();
-    private static final HikariDataSource DATA_SOURCE;
+    private static HikariDataSource DATA_SOURCE;
+    private static ConnectionPool instance;
 
     static {
         HIKARI_CONFIG.setJdbcUrl(PropertiesUtil.getProperties(URL_KEY));
@@ -36,8 +36,14 @@ public class ConnectionPool {
     private ConnectionPool() {
     }
 
+    public static synchronized ConnectionPool getInstance() {
+        if (instance == null) {
+            instance = new ConnectionPool();
+        }
+        return instance;
+    }
 
-    public static Connection get() throws SQLException {
+    public Connection get() throws SQLException {
         return DATA_SOURCE.getConnection();
     }
 }

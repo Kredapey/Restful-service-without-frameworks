@@ -1,9 +1,6 @@
 package aston.bootcamp.servlet;
 
-import aston.bootcamp.entity.Bike;
 import aston.bootcamp.exceptions.NotFoundException;
-import aston.bootcamp.repository.BikeRepository;
-import aston.bootcamp.repository.impl.BikeRepositoryImpl;
 import aston.bootcamp.service.BikeService;
 import aston.bootcamp.service.impl.BikeServiceImpl;
 import aston.bootcamp.servlet.dto.BikeIncomingDto;
@@ -38,6 +35,7 @@ public class BikeServletTest {
     private static HttpServletResponse mockResponse;
     @Mock
     private static BufferedReader mockBufferedReader;
+
     private static void setMock(BikeService mock) {
         try {
             Field instance = BikeServiceImpl.class.getDeclaredField("instance");
@@ -119,7 +117,7 @@ public class BikeServletTest {
     }
 
     @Test
-    void doDeleteBaRequest() throws IOException {
+    void doDeleteBadRequest() throws IOException {
         Mockito.doReturn("bike/ebdvev").when(mockRequest).getPathInfo();
         bikeServlet.doDelete(mockRequest, mockResponse);
         Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -146,6 +144,15 @@ public class BikeServletTest {
         Mockito.verify(mockBikeService).save(captor.capture());
         Assertions.assertEquals(captor.getValue().getBrand().getBrand(), "Honda");
         Assertions.assertEquals(captor.getValue().getType().getType(), "chopper");
+    }
+
+    @Test
+    void doPostBadRequest() throws IOException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("""
+                {badrequest}""", null).when(mockBufferedReader).readLine();
+        bikeServlet.doPost(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test
@@ -180,6 +187,31 @@ public class BikeServletTest {
                 {badrequest}""", null).when(mockBufferedReader).readLine();
         bikeServlet.doPut(mockRequest, mockResponse);
         Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    void doPutNotFound() throws IOException, NotFoundException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("""
+                {
+                        "id": 1,
+                        "type": {
+                            "id": 1,
+                            "type": "chopper"
+                        },
+                        "brand": {
+                            "id": 3,
+                            "brand": "Honda"
+                        },
+                        "model": "Shadow 150",
+                        "cost": 299900,
+                        "dealerships": []
+                    }""", null).when(mockBufferedReader).readLine();
+        Mockito.doThrow(new NotFoundException("Not found"))
+                .when(mockBikeService).update(Mockito.any(BikeUpdateDto.class));
+        bikeServlet.doPut(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        Mockito.verify(mockBikeService).update(Mockito.any(BikeUpdateDto.class));
     }
 
 }

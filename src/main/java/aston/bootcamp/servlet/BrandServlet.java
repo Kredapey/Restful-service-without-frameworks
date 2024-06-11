@@ -114,6 +114,9 @@ public class BrandServlet extends HttpServlet {
             BrandUpdateDto reqBrand = brandUpdateDto.orElseThrow(IllegalArgumentException::new);
             brandService.update(reqBrand);
             answer = "Success update";
+        }catch (NotFoundException ex) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            answer = "Brand not found";
         } catch (Exception ex) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             answer = "Incorrect brand Object";

@@ -1,18 +1,13 @@
 package aston.bootcamp.service.impl;
 
 import aston.bootcamp.entity.Bike;
-import aston.bootcamp.entity.Brand;
 import aston.bootcamp.exceptions.NotFoundException;
 import aston.bootcamp.repository.BikeRepository;
 import aston.bootcamp.repository.impl.BikeRepositoryImpl;
 import aston.bootcamp.service.BikeService;
 import aston.bootcamp.servlet.dto.*;
 import aston.bootcamp.servlet.mapper.BikeDtoMapper;
-import aston.bootcamp.servlet.mapper.BrandDtoMapper;
-import aston.bootcamp.servlet.mapper.TypeDtoMapper;
 import aston.bootcamp.servlet.mapper.impl.BikeDtoMapperImpl;
-import aston.bootcamp.servlet.mapper.impl.BrandDtoMapperImpl;
-import aston.bootcamp.servlet.mapper.impl.TypeDtoMapperImpl;
 
 import java.util.List;
 

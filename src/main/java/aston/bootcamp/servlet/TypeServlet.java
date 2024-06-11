@@ -115,7 +115,7 @@ public class TypeServlet extends HttpServlet {
             typeService.update(reqType);
             answer = "Success update";
         } catch (NotFoundException ex) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             answer = "Type not found";
         } catch (Exception ex) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

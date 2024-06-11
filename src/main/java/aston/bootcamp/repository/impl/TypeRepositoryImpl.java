@@ -2,10 +2,8 @@ package aston.bootcamp.repository.impl;
 
 import aston.bootcamp.db.ConnectionManager;
 import aston.bootcamp.db.impl.ConnectionManagerImpl;
-import aston.bootcamp.entity.Brand;
 import aston.bootcamp.entity.Type;
 import aston.bootcamp.exceptions.RepositoryException;
-import aston.bootcamp.repository.DealershipRepository;
 import aston.bootcamp.repository.TypeRepository;
 
 import java.sql.Connection;
@@ -37,19 +35,20 @@ public class TypeRepositoryImpl implements TypeRepository {
             SELECT exists(
             SELECT 1 FROM types WHERE id = ?);
             """;
-
-    private static TypeRepository instance;
     private static final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
+    private static TypeRepository instance;
 
     private TypeRepositoryImpl() {
 
     }
+
     public static synchronized TypeRepository getInstance() {
         if (instance == null) {
             instance = new TypeRepositoryImpl();
         }
         return instance;
     }
+
     private Type buildType(ResultSet resultSet, Type type) throws SQLException {
         return new Type(resultSet.getLong("id"), type.getType());
     }
@@ -92,7 +91,7 @@ public class TypeRepositoryImpl implements TypeRepository {
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
-        return  result;
+        return result;
     }
 
     @Override

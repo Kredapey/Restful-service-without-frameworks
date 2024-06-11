@@ -41,12 +41,12 @@ public class BikeRepositoryImpl implements BikeRepository {
             SELECT exists(
             SELECT 1 FROM bikes WHERE id = ?);
             """;
-    private static BikeRepository instance;
     private static final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
     private static final TypeRepository typeRepository = TypeRepositoryImpl.getInstance();
     private static final BrandRepository brandRepository = BrandRepositoryImpl.getInstance();
     private static final DealershipRepository dealershipRepository = DealershipRepositoryImpl.getInstance();
     private static final BikeToDealershipRepository bikeToDealershipRepository = BikeToDealershipRepositoryImpl.getInstance();
+    private static BikeRepository instance;
 
 
     private BikeRepositoryImpl() {

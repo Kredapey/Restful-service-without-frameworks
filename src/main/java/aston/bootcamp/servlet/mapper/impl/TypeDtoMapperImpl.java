@@ -4,7 +4,6 @@ import aston.bootcamp.entity.Type;
 import aston.bootcamp.servlet.dto.TypeIncomingDto;
 import aston.bootcamp.servlet.dto.TypeOutgoingDto;
 import aston.bootcamp.servlet.dto.TypeUpdateDto;
-import aston.bootcamp.servlet.mapper.DealershipDtoMapper;
 import aston.bootcamp.servlet.mapper.TypeDtoMapper;
 
 import java.util.List;

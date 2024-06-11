@@ -117,7 +117,7 @@ public class BikeServlet extends HttpServlet {
             bikeService.update(reqBike);
             answer = "Success update";
         } catch (NotFoundException ex) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             answer = "Bike not found";
         } catch (Exception ex) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

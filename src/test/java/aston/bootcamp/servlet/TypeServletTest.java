@@ -117,7 +117,7 @@ public class TypeServletTest {
     }
 
     @Test
-    void doDeleteBaRequest() throws IOException {
+    void doDeleteBadRequest() throws IOException {
         Mockito.doReturn("type/ebdvev").when(mockRequest).getPathInfo();
         typeServlet.doDelete(mockRequest, mockResponse);
         Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -134,6 +134,15 @@ public class TypeServletTest {
         ArgumentCaptor<TypeIncomingDto> captor = ArgumentCaptor.forClass(TypeIncomingDto.class);
         Mockito.verify(mockTypeService).save(captor.capture());
         Assertions.assertEquals(captor.getValue().getType(), "custom");
+    }
+
+    @Test
+    void doPostBadRequest() throws IOException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("""
+                {badrequest}""", null).when(mockBufferedReader).readLine();
+        typeServlet.doPost(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test
@@ -157,5 +166,20 @@ public class TypeServletTest {
                 {badrequest}""", null).when(mockBufferedReader).readLine();
         typeServlet.doPut(mockRequest, mockResponse);
         Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    void doPutNotFound() throws IOException, NotFoundException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("""
+                {
+                    "id": 1,
+                    "type": "custom"
+                }""", null).when(mockBufferedReader).readLine();
+        Mockito.doThrow(new NotFoundException("Not found"))
+                .when(mockTypeService).update(Mockito.any(TypeUpdateDto.class));
+        typeServlet.doPut(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        Mockito.verify(mockTypeService).update(Mockito.any(TypeUpdateDto.class));
     }
 }

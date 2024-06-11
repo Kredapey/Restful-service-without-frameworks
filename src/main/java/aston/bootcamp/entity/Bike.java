@@ -1,7 +1,5 @@
 package aston.bootcamp.entity;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,6 +31,7 @@ public class Bike {
     public Long getId() {
         return id;
     }
+
     public Type getType() {
         return type;
     }

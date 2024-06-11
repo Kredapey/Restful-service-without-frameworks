@@ -1,6 +1,5 @@
 package aston.bootcamp.service.impl;
 
-import aston.bootcamp.entity.Brand;
 import aston.bootcamp.entity.Type;
 import aston.bootcamp.exceptions.NotFoundException;
 import aston.bootcamp.repository.TypeRepository;
@@ -19,13 +18,14 @@ public class TypeServiceImpl implements TypeService {
     private final TypeRepository typeRepository = TypeRepositoryImpl.getInstance();
     private final TypeDtoMapper typeDtoMapper = TypeDtoMapperImpl.getInstance();
 
+    private TypeServiceImpl() {
+    }
+
     public static synchronized TypeService getInstance() {
         if (instance == null) {
             instance = new TypeServiceImpl();
         }
         return instance;
-    }
-    private TypeServiceImpl() {
     }
 
     private void checkType(Long typeId) throws NotFoundException {

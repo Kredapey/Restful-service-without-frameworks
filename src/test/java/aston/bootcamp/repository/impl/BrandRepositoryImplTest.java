@@ -1,12 +1,11 @@
 package aston.bootcamp.repository.impl;
 
+import aston.bootcamp.db.connectionPool.ConnectionPool;
 import aston.bootcamp.entity.Brand;
 import aston.bootcamp.repository.BrandRepository;
 import aston.bootcamp.utils.PropertiesUtil;
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,30 +15,36 @@ import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 @Testcontainers
 public class BrandRepositoryImplTest {
     private static final String CREATE_SQL = "sql/schema.sql";
 
-    private static final int CONTAINER_PORT = 5432;
-    private static final int LOCAL_PORT = 5432;
     @Container
     public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:latest").
-            withDatabaseName("bikes_db").
-            withUsername(PropertiesUtil.getProperties("db.usr")).
-            withPassword(PropertiesUtil.getProperties("db.pwd")).
-            withExposedPorts(CONTAINER_PORT).
-            withCreateContainerCmdModifier(cmd ->
-                    cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(LOCAL_PORT), new ExposedPort(CONTAINER_PORT))))).
             withInitScript(CREATE_SQL);
 
     private static BrandRepository brandRepository;
     private static JdbcDatabaseDelegate jdbcDatabaseDelegate;
 
     @BeforeAll
-    static void beforeAll() {
+    static void beforeAll() throws Exception {
         container.start();
+        HikariConfig testHikariConfig = new HikariConfig();
+        testHikariConfig.setDriverClassName(PropertiesUtil.getProperties("db.driver-class-name"));
+        testHikariConfig.setJdbcUrl(container.getJdbcUrl());
+        testHikariConfig.setUsername(container.getUsername());
+        testHikariConfig.setPassword(container.getPassword());
+        testHikariConfig.setMaximumPoolSize(Integer.parseInt(PropertiesUtil.getProperties("hikari.max-pool-size")));
+        testHikariConfig.setMinimumIdle(Integer.parseInt(PropertiesUtil.getProperties("hikari.min-idle")));
+        testHikariConfig.setAutoCommit(Boolean.parseBoolean(PropertiesUtil.getProperties("hikari.set-autocommit")));
+        testHikariConfig.setDriverClassName(PropertiesUtil.getProperties("db.driver-class-name"));
+        HikariDataSource testDataSource = new HikariDataSource(testHikariConfig);
+        Field connectionPool = ConnectionPool.class.getDeclaredField("DATA_SOURCE");
+        connectionPool.setAccessible(true);
+        connectionPool.set(connectionPool, testDataSource);
         brandRepository = BrandRepositoryImpl.getInstance();
         jdbcDatabaseDelegate = new JdbcDatabaseDelegate(container, "");
     }

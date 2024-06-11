@@ -117,10 +117,19 @@ public class DealershipServletTest {
     }
 
     @Test
-    void doDeleteBaRequest() throws IOException {
+    void doDeleteBadRequest() throws IOException {
         Mockito.doReturn("dealership/ebdvev").when(mockRequest).getPathInfo();
         dealershipServlet.doDelete(mockRequest, mockResponse);
         Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    void doDeleteBike() throws IOException, NotFoundException {
+        Mockito.doReturn("department/1/deleteBike/1").when(mockRequest).getPathInfo();
+        dealershipServlet.doDelete(mockRequest, mockResponse);
+        Mockito.doNothing().when(mockDealershipService).deleteBikeFromDealership(Mockito.any(Long.class), Mockito.any(Long.class));
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NO_CONTENT);
+        Mockito.verify(mockDealershipService).deleteBikeFromDealership(Mockito.any(Long.class), Mockito.any(Long.class));
     }
 
     @Test
@@ -135,6 +144,15 @@ public class DealershipServletTest {
         ArgumentCaptor<DealershipIncomingDto> captor = ArgumentCaptor.forClass(DealershipIncomingDto.class);
         Mockito.verify(mockDealershipService).save(captor.capture());
         Assertions.assertEquals(captor.getValue().getCity(), "Самара");
+    }
+
+    @Test
+    void doPostBadRequest() throws IOException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("""
+                {badrequest}""", null).when(mockBufferedReader).readLine();
+        dealershipServlet.doPost(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test
@@ -157,7 +175,6 @@ public class DealershipServletTest {
     }
 
 
-
     @Test
     void doPutBadRequest() throws IOException {
         Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
@@ -165,5 +182,35 @@ public class DealershipServletTest {
                 {badrequest}""", null).when(mockBufferedReader).readLine();
         dealershipServlet.doPut(mockRequest, mockResponse);
         Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    void doPutNotFound() throws IOException, NotFoundException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("department/").when(mockRequest).getPathInfo();
+        Mockito.doReturn("""
+                {
+                "id":1,
+                "city":"Самара",
+                "street":"Стара-Загора",
+                "houseNum":31,
+                "bikes":[]
+                }
+                """, null).when(mockBufferedReader).readLine();
+        Mockito.doThrow(new NotFoundException("Not found")).
+                when(mockDealershipService).update(Mockito.any(DealershipUpdateDto.class));
+        dealershipServlet.doPut(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        Mockito.verify(mockDealershipService).update(Mockito.any(DealershipUpdateDto.class));
+    }
+
+    @Test
+    void doPutAddBike() throws IOException, NotFoundException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("department/1/addBike/1").when(mockRequest).getPathInfo();
+        dealershipServlet.doPut(mockRequest, mockResponse);
+        Mockito.doNothing().when(mockDealershipService).addBikeToDealership(Mockito.any(Long.class), Mockito.any(Long.class));
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_OK);
+        Mockito.verify(mockDealershipService).addBikeToDealership(Mockito.any(Long.class), Mockito.any(Long.class));
     }
 }

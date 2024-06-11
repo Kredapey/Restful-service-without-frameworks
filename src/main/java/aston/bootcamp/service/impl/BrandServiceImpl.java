@@ -1,12 +1,10 @@
 package aston.bootcamp.service.impl;
 
-import aston.bootcamp.entity.Bike;
 import aston.bootcamp.entity.Brand;
 import aston.bootcamp.exceptions.NotFoundException;
 import aston.bootcamp.repository.BrandRepository;
 import aston.bootcamp.repository.impl.BrandRepositoryImpl;
 import aston.bootcamp.service.BrandService;
-import aston.bootcamp.service.TypeService;
 import aston.bootcamp.servlet.dto.BrandIncomingDto;
 import aston.bootcamp.servlet.dto.BrandOutgoingDto;
 import aston.bootcamp.servlet.dto.BrandUpdateDto;
@@ -20,13 +18,14 @@ public class BrandServiceImpl implements BrandService {
     private final BrandRepository brandRepository = BrandRepositoryImpl.getInstance();
     private final BrandDtoMapper brandDtoMapper = BrandDtoMapperImpl.getInstance();
 
+    private BrandServiceImpl() {
+    }
+
     public static synchronized BrandService getInstance() {
         if (instance == null) {
             instance = new BrandServiceImpl();
         }
         return instance;
-    }
-    private BrandServiceImpl() {
     }
 
     private void checkBrand(Long brandId) throws NotFoundException {

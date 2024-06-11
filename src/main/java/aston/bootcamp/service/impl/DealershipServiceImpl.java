@@ -25,14 +25,14 @@ public class DealershipServiceImpl implements DealershipService {
     private final BikeRepository bikeRepository = BikeRepositoryImpl.getInstance();
     private final BikeToDealershipRepository bikeToDealershipRepository = BikeToDealershipRepositoryImpl.getInstance();
 
+    private DealershipServiceImpl() {
+    }
+
     public static synchronized DealershipService getInstance() {
         if (instance == null) {
             instance = new DealershipServiceImpl();
         }
         return instance;
-    }
-
-    private DealershipServiceImpl() {
     }
 
     private void checkDealership(Long id) throws NotFoundException {

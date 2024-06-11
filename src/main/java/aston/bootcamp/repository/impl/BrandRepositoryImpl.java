@@ -35,8 +35,8 @@ public class BrandRepositoryImpl implements BrandRepository {
             SELECT exists(
             SELECT 1 FROM brands WHERE id = ?);
             """;
-    private static BrandRepository instance;
     private static final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
+    private static BrandRepository instance;
 
     private BrandRepositoryImpl() {
 
@@ -91,7 +91,7 @@ public class BrandRepositoryImpl implements BrandRepository {
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
-        return  result;
+        return result;
     }
 
     @Override

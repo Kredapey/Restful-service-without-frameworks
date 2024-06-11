@@ -130,11 +130,11 @@ public class DealershipServlet extends HttpServlet {
             }
             answer = "Success update";
         } catch (NotFoundException ex) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             answer = "Dealership not found";
         } catch (Exception ex) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            answer = "Incorrect dealership Object";
+            answer = "Incorrect Dealership Object";
         }
         PrintWriter writer = resp.getWriter();
         writer.println(answer);

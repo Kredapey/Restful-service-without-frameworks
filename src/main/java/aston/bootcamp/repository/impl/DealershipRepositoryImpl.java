@@ -8,7 +8,6 @@ import aston.bootcamp.entity.Dealership;
 import aston.bootcamp.exceptions.RepositoryException;
 import aston.bootcamp.repository.BikeRepository;
 import aston.bootcamp.repository.BikeToDealershipRepository;
-import aston.bootcamp.repository.BrandRepository;
 import aston.bootcamp.repository.DealershipRepository;
 
 import java.sql.Connection;
@@ -41,10 +40,10 @@ public class DealershipRepositoryImpl implements DealershipRepository {
             SELECT exists(
             SELECT 1 FROM dealerships WHERE id = ?);
             """;
-    private static DealershipRepository instance;
     private static final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
     private static final BikeToDealershipRepository bikeToDealershipRepository = BikeToDealershipRepositoryImpl.getInstance();
     private static final BikeRepository bikeRepository = BikeRepositoryImpl.getInstance();
+    private static DealershipRepository instance;
 
     private DealershipRepositoryImpl() {
 

@@ -117,7 +117,7 @@ public class BrandServletTest {
     }
 
     @Test
-    void doDeleteBaRequest() throws IOException {
+    void doDeleteBadRequest() throws IOException {
         Mockito.doReturn("brand/ebdvev").when(mockRequest).getPathInfo();
         brandServlet.doDelete(mockRequest, mockResponse);
         Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -134,6 +134,15 @@ public class BrandServletTest {
         ArgumentCaptor<BrandIncomingDto> captor = ArgumentCaptor.forClass(BrandIncomingDto.class);
         Mockito.verify(mockBrandService).save(captor.capture());
         Assertions.assertEquals(captor.getValue().getBrand(), "BMW");
+    }
+
+    @Test
+    void doPostBadRequest() throws IOException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("""
+                {badrequest}""", null).when(mockBufferedReader).readLine();
+        brandServlet.doPost(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test
@@ -159,4 +168,18 @@ public class BrandServletTest {
         Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
+    @Test
+    void doPutNotFound() throws IOException, NotFoundException {
+        Mockito.doReturn(mockBufferedReader).when(mockRequest).getReader();
+        Mockito.doReturn("""
+                {
+                    "id": 1,
+                    "brand": "BMW"
+                }""", null).when(mockBufferedReader).readLine();
+        Mockito.doThrow(new NotFoundException("Not found"))
+                .when(mockBrandService).update(Mockito.any(BrandUpdateDto.class));
+        brandServlet.doPut(mockRequest, mockResponse);
+        Mockito.verify(mockResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        Mockito.verify(mockBrandService).update(Mockito.any(BrandUpdateDto.class));
+    }
 }
