@@ -48,9 +48,10 @@ public class BikeToDealershipRepositoryImplTest {
         testHikariConfig.setAutoCommit(Boolean.parseBoolean(PropertiesUtil.getProperties("hikari.set-autocommit")));
         testHikariConfig.setDriverClassName(PropertiesUtil.getProperties("db.driver-class-name"));
         HikariDataSource testDataSource = new HikariDataSource(testHikariConfig);
-        Field connectionPool = ConnectionPool.class.getDeclaredField("DATA_SOURCE");
-        connectionPool.setAccessible(true);
-        connectionPool.set(connectionPool, testDataSource);
+        ConnectionPool connectionPool = ConnectionPool.getInstance();
+        Field dataSource = connectionPool.getClass().getDeclaredField("dataSource");
+        dataSource.setAccessible(true);
+        dataSource.set(connectionPool, testDataSource);
         bikeToDealershipRepository = BikeToDealershipRepositoryImpl.getInstance();
         bikeRepository = BikeRepositoryImpl.getInstance();
         dealershipRepository = DealershipRepositoryImpl.getInstance();

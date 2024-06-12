@@ -46,9 +46,10 @@ public class BikeRepositoryImplTest {
         testHikariConfig.setMinimumIdle(Integer.parseInt(PropertiesUtil.getProperties("hikari.min-idle")));
         testHikariConfig.setAutoCommit(Boolean.parseBoolean(PropertiesUtil.getProperties("hikari.set-autocommit")));
         HikariDataSource testDataSource = new HikariDataSource(testHikariConfig);
-        Field connectionPool = ConnectionPool.class.getDeclaredField("DATA_SOURCE");
-        connectionPool.setAccessible(true);
-        connectionPool.set(connectionPool, testDataSource);
+        ConnectionPool connectionPool = ConnectionPool.getInstance();
+        Field dataSource = connectionPool.getClass().getDeclaredField("dataSource");
+        dataSource.setAccessible(true);
+        dataSource.set(connectionPool, testDataSource);
         bikeRepository = BikeRepositoryImpl.getInstance();
         typeRepository = TypeRepositoryImpl.getInstance();
         brandRepository = BrandRepositoryImpl.getInstance();

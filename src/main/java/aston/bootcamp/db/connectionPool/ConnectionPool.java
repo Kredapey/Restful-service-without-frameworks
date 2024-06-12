@@ -18,10 +18,11 @@ public class ConnectionPool {
     private static final String SET_AUTOCOMMIT_KEY = "hikari.set-autocommit";
     private static final String DRIVER_KEY = "db.driver-class-name";
     private static final HikariConfig HIKARI_CONFIG = new HikariConfig();
-    private static HikariDataSource DATA_SOURCE;
+    private HikariDataSource dataSource;
     private static ConnectionPool instance;
 
-    static {
+
+    private ConnectionPool() {
         HIKARI_CONFIG.setJdbcUrl(PropertiesUtil.getProperties(URL_KEY));
         HIKARI_CONFIG.setPoolName(PropertiesUtil.getProperties(POOL_NAME_KEY));
         HIKARI_CONFIG.setUsername(PropertiesUtil.getProperties(USERNAME_KEY));
@@ -30,10 +31,6 @@ public class ConnectionPool {
         HIKARI_CONFIG.setMinimumIdle(Integer.parseInt(PropertiesUtil.getProperties(MIN_IDLE_KEY)));
         HIKARI_CONFIG.setAutoCommit(Boolean.parseBoolean(PropertiesUtil.getProperties(SET_AUTOCOMMIT_KEY)));
         HIKARI_CONFIG.setDriverClassName(PropertiesUtil.getProperties(DRIVER_KEY));
-        DATA_SOURCE = new HikariDataSource(HIKARI_CONFIG);
-    }
-
-    private ConnectionPool() {
     }
 
     public static synchronized ConnectionPool getInstance() {
@@ -43,7 +40,14 @@ public class ConnectionPool {
         return instance;
     }
 
+    private void setDataSource() {
+        if (dataSource == null) {
+            dataSource = new HikariDataSource(HIKARI_CONFIG);
+        }
+    }
+
     public Connection get() throws SQLException {
-        return DATA_SOURCE.getConnection();
+        setDataSource();
+        return dataSource.getConnection();
     }
 }
